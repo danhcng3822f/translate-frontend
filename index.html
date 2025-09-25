@@ -32,7 +32,7 @@
             resultDiv.style.display = 'none';
             
             // Thay API_URL bằng URL backend của bạn sau khi deploy (ví dụ: https://your-app.onrender.com/api/translate)
-            const API_URL = 'https://translate-backend-yi59.onrender.com';  // Tạm dùng localhost để test
+            const API_URL = 'https://translate-backend-yi59.onrender.com/api/translate';  // Tạm dùng localhost để test
             
             try {
                 const response = await fetch(`${API_URL}?text=${encodeURIComponent(text)}`);
