@@ -13,40 +13,49 @@
 </head>
 <body>
     <h1>Dịch từ Tiếng Anh sang Tiếng Việt</h1>
-    <input type="text" id="textInput" placeholder="Nhập văn bản tiếng Anh, ví dụ: Hello" required>
-    <button onclick="translate()">Dịch ngay!</button>
-    
-    <div id="result" class="result">
-        <h3>Kết quả:</h3>
-        <p><strong>Bản gốc:</strong> <span id="original"></span></p>
-        <p><strong>Bản dịch:</strong> <span id="translated"></span></p>
-    </div>
+    <!-- Phần form giữ nguyên -->
+<input type="text" id="textInput" placeholder="Nhập văn bản tiếng Anh, ví dụ: Hello" required>
+<button id="translateBtn">Dịch ngay!</button>  <!-- Bỏ onclick, thêm id -->
 
-    <script>
-        async function translate() {
-            const text = document.getElementById('textInput').value;
-            if (!text) return alert('Nhập văn bản đi bạn!');
-            
-            const resultDiv = document.getElementById('result');
-            const loading = document.querySelector('.loading');
-            resultDiv.style.display = 'none';
-            
-            // Thay API_URL bằng URL backend của bạn sau khi deploy (ví dụ: https://your-app.onrender.com/api/translate)
-            const API_URL = 'https://translate-backend-yi59.onrender.com/api/translate';  // Tạm dùng localhost để test
-            
-            try {
-                const response = await fetch(`${API_URL}?text=${encodeURIComponent(text)}`);
-                const data = await response.json();
-                
-                if (data.error) throw new Error(data.error);
-                
-                document.getElementById('original').textContent = data.original;
-                document.getElementById('translated').textContent = data.translated;
-                resultDiv.style.display = 'block';
-            } catch (error) {
-                alert('Lỗi dịch: ' + error.message);
-            }
+<div id="result" class="result">
+    <h3>Kết quả:</h3>
+    <p><strong>Bản gốc:</strong> <span id="original"></span></p>
+    <p><strong>Bản dịch:</strong> <span id="translated"></span></p>
+</div>
+
+<script>
+    // Hàm dịch (giữ nguyên, nhưng thêm console.log để debug)
+    async function translate() {
+        const text = document.getElementById('textInput').value;
+        if (!text) return alert('Nhập văn bản đi bạn!');
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'none';
+
+        const API_URL = 'https://translate-backend-yi59.onrender.com/api/translate';  // Đã đúng
+
+        try {
+            console.log('Calling API with text:', text);  // Debug: Xem trong Console
+            const response = await fetch(`${API_URL}?text=${encodeURIComponent(text)}`);
+            console.log('Response status:', response.status);  // Debug
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            console.log('Data received:', data);  // Debug
+
+            if (data.error) throw new Error(data.error);
+
+            document.getElementById('original').textContent = data.original;
+            document.getElementById('translated').textContent = data.translated;
+            resultDiv.style.display = 'block';
+        } catch (error) {
+            console.error('Full error:', error);  // Debug chi tiết
+            alert('Lỗi dịch: ' + error.message);
         }
-    </script>
-</body>
-</html>
+    }
+
+    // Thêm event listener thay onclick (fix lỗi function not found)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('translateBtn').addEventListener('click', translate);
+    });
+</script>
