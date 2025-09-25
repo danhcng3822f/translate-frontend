@@ -101,12 +101,12 @@
                 console.log('Calling API with text:', text);  // Debug
                 const response = await fetch(`${API_URL}?text=${encodeURIComponent(text)}`);
                 console.log('Response status:', response.status);  // Debug
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
+                // Luôn parse JSON trước, dù status 400 (để lấy data.error)
                 const data = await response.json();
                 console.log('Data received:', data);  // Debug
                 
-                // Nếu có lỗi từ backend (như tên riêng)
+                // Nếu có lỗi từ backend (như tên riêng, status 400 nhưng có message)
                 if (data.error) {
                     document.getElementById('original').textContent = text;
                     document.getElementById('translated').textContent = data.error;  // Hiển thị lỗi ở đây
@@ -114,6 +114,11 @@
                     resultDiv.classList.add('error-card');  // Style đỏ cho lỗi
                     resultDiv.style.display = 'block';
                     return;
+                }
+                
+                // Nếu status không ok nhưng không có data.error (lỗi khác), throw
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${data.message || 'Unknown error'}`);
                 }
                 
                 // Hiển thị kết quả thành công
