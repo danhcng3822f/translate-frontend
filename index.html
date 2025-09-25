@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>API Dịch Tiếng Anh - Việt</title>
+    <style>
+        body { font-family: Arial; margin: 50px; }
+        input[type="text"] { width: 300px; padding: 10px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 20px; padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; display: none; }
+        .loading { color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>Dịch từ Tiếng Anh sang Tiếng Việt</h1>
+    <input type="text" id="textInput" placeholder="Nhập văn bản tiếng Anh, ví dụ: Hello" required>
+    <button onclick="translate()">Dịch ngay!</button>
+    
+    <div id="result" class="result">
+        <h3>Kết quả:</h3>
+        <p><strong>Bản gốc:</strong> <span id="original"></span></p>
+        <p><strong>Bản dịch:</strong> <span id="translated"></span></p>
+    </div>
+
+    <script>
+        async function translate() {
+            const text = document.getElementById('textInput').value;
+            if (!text) return alert('Nhập văn bản đi bạn!');
+            
+            const resultDiv = document.getElementById('result');
+            const loading = document.querySelector('.loading');
+            resultDiv.style.display = 'none';
+            
+            // Thay API_URL bằng URL backend của bạn sau khi deploy (ví dụ: https://your-app.onrender.com/api/translate)
+            const API_URL = 'http://localhost:5000/api/translate';  // Tạm dùng localhost để test
+            
+            try {
+                const response = await fetch(`${API_URL}?text=${encodeURIComponent(text)}`);
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error);
+                
+                document.getElementById('original').textContent = data.original;
+                document.getElementById('translated').textContent = data.translated;
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                alert('Lỗi dịch: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
